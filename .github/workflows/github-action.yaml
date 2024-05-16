@@ -61,9 +61,9 @@ jobs:
       - name: switFailNotify
         if: failure()
         run: |
-          curl -X POST -H "Content-type: application/json" --data "{\"text\":\"Github action failed\"}" ${{ secrets.SWIT_WEBHOOK_URL }}
+          curl -X POST -H "Content-type: application/json" --data "{\"text\":\"Github action failed\"}" https://hook.swit.io/chat/230704020620x2fEHM4/lV8EFcPY5xpR7qldXhZO?organization_id=19090600325683321
 
       - name: switSuccessNotify
         if: success()
         run: |
-          curl -X POST -H "Content-type: application/json" --data "{\"text\":\"Github action success\"}" ${{ secrets.SWIT_WEBHOOK_URL }}
+          curl -X POST -H "Content-type: application/json" --data "{\"text\":\"Github action success\"}" https://hook.swit.io/chat/230704020620x2fEHM4/lV8EFcPY5xpR7qldXhZO?organization_id=19090600325683321
