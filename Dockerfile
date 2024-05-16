@@ -11,7 +11,7 @@ RUN go mod download
 
 COPY ./ ./
 
-RUN CGO_ENABLED=0 GOOS=linux go build -o /chat ./cmd
+RUN CGO_ENABLED=0 GOOS=linux go build -o /server ./cmd
 
 # Run the tests in the container. No code for test...
 FROM build-stage AS run-test-stage
@@ -22,8 +22,8 @@ FROM atlassian/ubuntu-minimal:latest AS build-release-stage
 
 WORKDIR /
 
-COPY --from=build-stage /chat /chat
+COPY --from=build-stage /server /server
 
 EXPOSE 8080
 
-ENTRYPOINT ["/chat"]
+ENTRYPOINT ["/server"]
