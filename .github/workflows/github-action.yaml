@@ -39,10 +39,10 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-#            ${{ github.repository_owner }}/${{ env.IMG_NAME }}:latest
             parkhyuntae/${{ env.IMG_NAME }}:latest
-#            ${{ github.repository_owner }}/${{ steps.metadata.outputs.tags }}
             parkhyuntae/${{ steps.metadata.outputs.tags }}
+#            ${{ github.repository_owner }}/${{ env.IMG_NAME }}:latest
+#            ${{ github.repository_owner }}/${{ steps.metadata.outputs.tags }}
 
 #      - id: "auth"
 #        name: 'Authenticate to Google Cloud'
