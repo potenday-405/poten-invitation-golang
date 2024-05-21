@@ -99,16 +99,39 @@ func (s *expenseService) UpdateExpense(ctx *gin.Context, expense *model.UpdateEx
 }
 
 func (s *expenseService) DeleteExpense(ctx *gin.Context, expense *model.DeleteExpense) error {
+	// 이전 정보 (점수 계산에 필요)
+	//oldEvent, err := s.repo.GetExpenseByEventID(ctx, expense.EventID)
+	//if err != nil {
+	//	return err
+	//}
 	if err := s.repo.DeleteExpense(ctx, expense.EventID); err != nil {
 		return err
 	}
+	// TODO 점수 삭제(유저에 요청) 이전 정보에서 참석여부 정보 확인 + 생성 점수 삭제 요청
 	return nil
 }
 
 func (s *expenseService) GetExpense(ctx *gin.Context, expense *model.GetExpense) (*model.ResponseExpense, error) {
-	res, err := s.repo.GetExpense(ctx, expense.EventID)
+	res, err := s.repo.GetExpense(ctx, expense.UserID, expense.EventID)
 	if err != nil {
 		return nil, err
 	}
 	return res, nil
+}
+
+func (s *expenseService) GetExpenseList(ctx *gin.Context, expense *model.GetExpenseList) ([]*model.ResponseExpense, error) {
+	if expense.Limit > 100 {
+		expense.Limit = 100
+	}
+	if expense.Limit == 0 {
+		expense.Limit = 10
+	}
+	if expense.Page == 0 {
+		expense.Page = 1
+	}
+	list, err := s.repo.GetExpenseList(ctx, expense)
+	if err != nil {
+		return nil, err
+	}
+	return list, nil
 }

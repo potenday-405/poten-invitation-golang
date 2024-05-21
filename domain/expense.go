@@ -12,7 +12,8 @@ type ExpenseRepository interface {
 	CreateAttendee(ctx *gin.Context, attendee *model.Attendees) error
 	GetExpenseByEventID(ctx *gin.Context, eventID string) (*model.ResponseExpense, error)
 	DeleteExpense(ctx *gin.Context, eventID string) error
-	GetExpense(ctx *gin.Context, eventID string) (*model.ResponseExpense, error)
+	GetExpense(ctx *gin.Context, userID, eventID string) (*model.ResponseExpense, error)
+	GetExpenseList(ctx *gin.Context, expense *model.GetExpenseList) ([]*model.ResponseExpense, error)
 }
 
 type ExpenseService interface {
@@ -20,6 +21,7 @@ type ExpenseService interface {
 	UpdateExpense(ctx *gin.Context, expense *model.UpdateExpense) (*model.ResponseExpense, error)
 	DeleteExpense(ctx *gin.Context, expense *model.DeleteExpense) error
 	GetExpense(ctx *gin.Context, expense *model.GetExpense) (*model.ResponseExpense, error)
+	GetExpenseList(ctx *gin.Context, expense *model.GetExpenseList) ([]*model.ResponseExpense, error)
 }
 
 type ExpenseController interface {
@@ -27,4 +29,5 @@ type ExpenseController interface {
 	UpdateExpense(ctx *gin.Context)
 	DeleteExpense(ctx *gin.Context)
 	GetExpense(ctx *gin.Context)
+	GetExpenseList(ctx *gin.Context)
 }
