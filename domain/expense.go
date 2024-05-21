@@ -15,8 +15,10 @@ type ExpenseRepository interface {
 
 type ExpenseService interface {
 	CreateExpense(ctx *gin.Context, expense *model.CreateExpense) (*model.ResponseExpense, error)
+	UpdateExpense(ctx *gin.Context, expense *model.UpdateExpense) (*model.ResponseExpense, error)
 }
 
 type ExpenseController interface {
 	CreateExpense(ctx *gin.Context)
+	UpdateExpense(ctx *gin.Context)
 }

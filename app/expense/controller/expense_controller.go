@@ -25,13 +25,33 @@ func (c *expenseController) CreateExpense(ctx *gin.Context) {
 	}
 	var expense model.CreateExpense
 	if err := ctx.ShouldBind(&expense); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 	expense.UserID = userID
 	res, err := c.service.CreateExpense(ctx, &expense)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, res)
+}
+
+func (c *expenseController) UpdateExpense(ctx *gin.Context) {
+	userID := ctx.Request.Header.Get("user_id")
+	if userID == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid token, user id not exist"})
+		return
+	}
+	var expense model.UpdateExpense
+	if err := ctx.ShouldBind(&expense); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+	expense.UserID = userID
+	res, err := c.service.UpdateExpense(ctx, &expense)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 	ctx.JSON(http.StatusOK, res)
