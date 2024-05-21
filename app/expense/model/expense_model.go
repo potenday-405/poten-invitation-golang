@@ -1,6 +1,9 @@
 package model
 
-import "time"
+import (
+	"poten-invitation-golang/util"
+	"time"
+)
 
 type isInvited string
 
@@ -27,15 +30,24 @@ type CreateExpense struct {
 	Link       string `json:"link"`
 }
 
+type UpdateExpense struct {
+	EventID    string `json:"event_id" binding:"required"`
+	UserID     string `json:"user_id"`
+	IsInvited  string `json:"is_invited" binding:"required"`
+	Name       string `json:"name" binding:"required"`
+	EventDate  string `json:"event_date" binding:"required"`
+	Expense    int64  `json:"expense" binding:"required"`
+	Relation   string `json:"relation"`
+	IsAttended int8   `json:"is_attended"`
+	Link       string `json:"link"`
+}
+
 func (t CreateExpense) ToEntity() (*Event, *Attendees, error) {
-	eventDate, err := time.Parse(time.DateTime, t.EventDate)
-	if err != nil {
-		return nil, nil, err
-	}
 	event := Event{
-		UserID:    t.UserID,
-		IsInvited: isInvited(t.IsInvited).GetIntValue(),
-		EventDate: eventDate,
+		UserID:       t.UserID,
+		IsInvited:    isInvited(t.IsInvited).GetIntValue(),
+		EventDate:    util.StringToTime(t.EventDate).UTC(),
+		InvitationID: 1,
 	}
 	attendees := Attendees{
 		Name:        t.Name,
@@ -53,14 +65,14 @@ func (t CreateExpense) TableName() string {
 }
 
 type Event struct {
-	EventID       string
-	UserID        string
-	InvitationID  int8
-	IsInvited     int8
-	InvitedStatus string
-	EventDate     time.Time
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
+	EventID      string
+	UserID       string
+	InvitationID int8
+	IsInvited    int8
+	InviteStatus string
+	EventDate    time.Time
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
 }
 
 func (t Event) TableName() string {
@@ -84,4 +96,12 @@ func (t Attendees) TableName() string {
 }
 
 type ResponseExpense struct {
+	EventId    string    `json:"event_id"`
+	UserID     string    `json:"user_id"`
+	IsInvited  int8      `json:"is_invited"`
+	EventDate  time.Time `json:"event_date"`
+	Name       string    `json:"name"`
+	Relation   string    `json:"relation"`
+	Amount     int64     `json:"amount"`
+	IsAttended int8      `json:"is_attended"`
 }
