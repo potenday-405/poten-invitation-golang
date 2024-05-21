@@ -16,6 +16,8 @@ func GetRouter(expenseController domain.ExpenseController) *gin.Engine {
 	})
 	r.Group("/invitation")
 	r.POST("/expense", expenseController.CreateExpense)
+	r.PUT("/expense", expenseController.UpdateExpense)
+	r.DELETE("/expense", expenseController.DeleteExpense)
 
 	return r
 }

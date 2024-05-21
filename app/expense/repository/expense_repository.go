@@ -47,3 +47,12 @@ func (r *expenseRepository) GetExpenseByEventID(ctx *gin.Context, eventID string
 	}
 	return &expense, nil
 }
+
+func (r *expenseRepository) DeleteExpense(ctx *gin.Context, eventID string) error {
+	if r.externalDB.Table("event").
+		Update("invite_status = ?", "del").
+		Where("event_id = ?", eventID).RowsAffected == 0 {
+		return errors.New("invalid parameter event_id")
+	}
+	return nil
+}
