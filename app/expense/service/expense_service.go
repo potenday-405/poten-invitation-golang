@@ -104,3 +104,11 @@ func (s *expenseService) DeleteExpense(ctx *gin.Context, expense *model.DeleteEx
 	}
 	return nil
 }
+
+func (s *expenseService) GetExpense(ctx *gin.Context, expense *model.GetExpense) (*model.ResponseExpense, error) {
+	res, err := s.repo.GetExpense(ctx, expense.EventID)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}

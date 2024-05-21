@@ -75,3 +75,22 @@ func (c *expenseController) DeleteExpense(ctx *gin.Context) {
 		"message": "deleted successfully",
 	})
 }
+
+func (c *expenseController) GetExpense(ctx *gin.Context) {
+	userID := ctx.Request.Header.Get("user_id")
+	if userID == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid token, user id not exist"})
+		return
+	}
+	var expense model.GetExpense
+	if err := ctx.ShouldBind(&expense); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+	expense.UserID = userID
+	res, err := c.service.GetExpense(ctx, &expense)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err})
+	}
+	ctx.JSON(http.StatusOK, res)
+}
