@@ -30,19 +30,7 @@ type CreateExpense struct {
 	Link       string `json:"link"`
 }
 
-type UpdateExpense struct {
-	EventID    string `json:"event_id" binding:"required"`
-	UserID     string `json:"user_id"`
-	IsInvited  string `json:"is_invited" binding:"required"`
-	Name       string `json:"name" binding:"required"`
-	EventDate  string `json:"event_date" binding:"required"`
-	Expense    int64  `json:"expense" binding:"required"`
-	Relation   string `json:"relation"`
-	IsAttended int8   `json:"is_attended"`
-	Link       string `json:"link"`
-}
-
-func (t CreateExpense) ToEntity() (*Event, *Attendees, error) {
+func (t *CreateExpense) ToEntity() (*Event, *Attendees, error) {
 	event := Event{
 		UserID:       t.UserID,
 		IsInvited:    isInvited(t.IsInvited).GetIntValue(),
@@ -60,8 +48,34 @@ func (t CreateExpense) ToEntity() (*Event, *Attendees, error) {
 	return &event, &attendees, nil
 }
 
-func (t CreateExpense) TableName() string {
-	return "expense"
+type UpdateExpense struct {
+	EventID    string `json:"event_id" binding:"required"`
+	UserID     string `json:"user_id"`
+	IsInvited  string `json:"is_invited" binding:"required"`
+	Name       string `json:"name" binding:"required"`
+	EventDate  string `json:"event_date" binding:"required"`
+	Expense    int64  `json:"expense" binding:"required"`
+	Relation   string `json:"relation"`
+	IsAttended int8   `json:"is_attended"`
+	Link       string `json:"link"`
+}
+
+func (t *UpdateExpense) ToEntity() (*Event, *Attendees, error) {
+	event := Event{
+		UserID:       t.UserID,
+		IsInvited:    isInvited(t.IsInvited).GetIntValue(),
+		EventDate:    util.StringToTime(t.EventDate).UTC(),
+		InvitationID: 1,
+	}
+	attendees := Attendees{
+		Name:        t.Name,
+		Relation:    t.Relation,
+		Amount:      t.Expense,
+		ExpenseType: 1,
+		IsAttended:  t.IsAttended,
+	}
+
+	return &event, &attendees, nil
 }
 
 type Event struct {
