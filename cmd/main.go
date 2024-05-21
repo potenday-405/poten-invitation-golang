@@ -1,8 +1,7 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
-	"net/http"
+	"log"
 	"poten-invitation-golang/app/expense/controller"
 	"poten-invitation-golang/app/expense/repository"
 	"poten-invitation-golang/app/expense/service"
@@ -19,11 +18,8 @@ func main() {
 	expenseService := service.NewExpenseService(expenseRepository)
 	expenseController := controller.NewExpenseController(expenseService)
 
-	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
-	r.Run()
+	if err := external.GetRouter(expenseController).Run(); err != nil {
+		log.Fatalln(err)
+	}
+
 }
