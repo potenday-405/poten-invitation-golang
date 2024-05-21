@@ -97,3 +97,10 @@ func (s *expenseService) UpdateExpense(ctx *gin.Context, expense *model.UpdateEx
 
 	return newEvent, nil
 }
+
+func (s *expenseService) DeleteExpense(ctx *gin.Context, expense *model.DeleteExpense) error {
+	if err := s.repo.DeleteExpense(ctx, expense.EventID); err != nil {
+		return err
+	}
+	return nil
+}

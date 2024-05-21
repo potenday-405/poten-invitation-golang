@@ -78,6 +78,12 @@ func (t *UpdateExpense) ToEntity() (*Event, *Attendees, error) {
 	return &event, &attendees, nil
 }
 
+type DeleteExpense struct {
+	EventID string `json:"event_id" binding:"required"`
+}
+
+//=====ENTITY=====
+
 type Event struct {
 	EventID      string
 	UserID       string
