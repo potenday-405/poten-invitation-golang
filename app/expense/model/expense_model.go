@@ -87,6 +87,16 @@ type GetExpense struct {
 	EventID string `json:"event_id" binding:"required"`
 }
 
+type GetExpenseList struct {
+	UserID          string `json:"user_id"`
+	IsInvited       string `json:"is_invited" binding:"required"`
+	Offset          string `json:"offset"`
+	OffsetOrderType int8   `json:"offset_order_type"`
+	Order           string `json:"order"`
+	Limit           int    `json:"limit"`
+	Page            int    `json:"page"`
+}
+
 //=====ENTITY=====
 
 type Event struct {

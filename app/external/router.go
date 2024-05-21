@@ -19,6 +19,7 @@ func GetRouter(expenseController domain.ExpenseController) *gin.Engine {
 	r.PUT("/expense", expenseController.UpdateExpense)
 	r.DELETE("/expense", expenseController.DeleteExpense)
 	r.GET("/expense", expenseController.GetExpense)
+	r.GET("/expenses", expenseController.GetExpenseList)
 
 	return r
 }
