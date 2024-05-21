@@ -140,3 +140,21 @@ func (r *expenseRepository) GetExpenseTotal(ctx *gin.Context, expense *model.Get
 	}
 	return &total, nil
 }
+
+func (r *expenseRepository) GetExpenseSearch(ctx *gin.Context, expense *model.GetExpenseSearch) ([]*model.ResponseExpense, error) {
+	var expenses []*model.ResponseExpense
+	db := r.externalDB.Select("a.event_id, a.user_id, a.is_invited, a.event_date, b.name, b.relation, b.amount, b.is_attended").
+		Table("event a").
+		Joins("JOIN attendees b ON a.event_id = b.event_id").
+		Where("a.user_id = ?", expense.UserID)
+	switch expense.IsInvited {
+	case "invited":
+		db.Where("a.is_invited = 1")
+	case "inviting":
+		db.Where("a.is_invited = 2")
+	}
+	if err := db.Where("b.name LIKE '%?%'", expense.Name).Scan(&expenses).Error; err != nil {
+		return nil, err
+	}
+	return expenses, nil
+}

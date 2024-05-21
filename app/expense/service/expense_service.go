@@ -141,5 +141,13 @@ func (s *expenseService) GetExpenseTotal(ctx *gin.Context, expense *model.GetExp
 	if err != nil {
 		return nil, err
 	}
-	return total, err
+	return total, nil
+}
+
+func (s *expenseService) GetExpenseSearch(ctx *gin.Context, expense *model.GetExpenseSearch) ([]*model.ResponseExpense, error) {
+	list, err := s.repo.GetExpenseSearch(ctx, expense)
+	if err != nil {
+		return nil, err
+	}
+	return list, nil
 }

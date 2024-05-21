@@ -15,6 +15,7 @@ type ExpenseRepository interface {
 	GetExpense(ctx *gin.Context, userID, eventID string) (*model.ResponseExpense, error)
 	GetExpenseList(ctx *gin.Context, expense *model.GetExpenseList) ([]*model.ResponseExpense, error)
 	GetExpenseTotal(ctx *gin.Context, expense *model.GetExpenseTotal) (*model.ResponseExpenseTotal, error)
+	GetExpenseSearch(ctx *gin.Context, expense *model.GetExpenseSearch) ([]*model.ResponseExpense, error)
 }
 
 type ExpenseService interface {
@@ -24,6 +25,7 @@ type ExpenseService interface {
 	GetExpense(ctx *gin.Context, expense *model.GetExpense) (*model.ResponseExpense, error)
 	GetExpenseList(ctx *gin.Context, expense *model.GetExpenseList) ([]*model.ResponseExpense, error)
 	GetExpenseTotal(ctx *gin.Context, expense *model.GetExpenseTotal) (*model.ResponseExpenseTotal, error)
+	GetExpenseSearch(ctx *gin.Context, expense *model.GetExpenseSearch) ([]*model.ResponseExpense, error)
 }
 
 type ExpenseController interface {
@@ -33,4 +35,5 @@ type ExpenseController interface {
 	GetExpense(ctx *gin.Context)
 	GetExpenseList(ctx *gin.Context)
 	GetExpenseTotal(ctx *gin.Context)
+	GetExpenseSearch(ctx *gin.Context)
 }
