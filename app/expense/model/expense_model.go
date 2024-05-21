@@ -104,6 +104,12 @@ type GetExpenseTotal struct {
 	OffsetOrderType int8   `json:"offset_order_type"`
 }
 
+type GetExpenseSearch struct {
+	UserID    string `json:"user_id"`
+	IsInvited string `json:"is_invited" binding:"required"`
+	Name      string `json:"name" binding:"required"`
+}
+
 //=====ENTITY=====
 
 type Event struct {
