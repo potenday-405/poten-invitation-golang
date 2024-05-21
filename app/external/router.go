@@ -20,6 +20,7 @@ func GetRouter(expenseController domain.ExpenseController) *gin.Engine {
 	r.DELETE("/expense", expenseController.DeleteExpense)
 	r.GET("/expense", expenseController.GetExpense)
 	r.GET("/expenses", expenseController.GetExpenseList)
+	r.GET("/expense/total", expenseController.GetExpenseTotal)
 
 	return r
 }

@@ -26,12 +26,12 @@ func TestExpenseService_CreateExpense(t *testing.T) {
 	testInitializer()
 	expense, err := testService.CreateExpense(nil, &model.CreateExpense{
 		Name:       "coen",
-		Expense:    50000,
+		Expense:    150000,
 		Relation:   "친구",
 		IsAttended: 1,
 		UserID:     "505f4353-6160-4d27-8898-124d2802cb04",
 		EventDate:  "2020-11-11 17:00:00",
-		IsInvited:  "invited",
+		IsInvited:  "inviting",
 		Link:       "naver.com",
 	})
 	if err != nil {
