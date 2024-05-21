@@ -13,7 +13,7 @@ func (i isInvited) GetIntValue() int8 {
 	case "invited":
 		res = 1
 	case "inviting":
-		res = 0
+		res = 2
 	}
 
 	return res
@@ -97,6 +97,13 @@ type GetExpenseList struct {
 	Page            int    `json:"page"`
 }
 
+type GetExpenseTotal struct {
+	UserID          string `json:"user_id"`
+	IsInvited       string `json:"is_invited" binding:"required"`
+	Offset          string `json:"offset"`
+	OffsetOrderType int8   `json:"offset_order_type"`
+}
+
 //=====ENTITY=====
 
 type Event struct {
@@ -139,4 +146,10 @@ type ResponseExpense struct {
 	Relation   string    `json:"relation"`
 	Amount     int64     `json:"amount"`
 	IsAttended int8      `json:"is_attended"`
+}
+
+type ResponseExpenseTotal struct {
+	IsInvited    int8  `json:"is_invited"`
+	ExpenseCount int   `json:"expense_count"`
+	ExpenseTotal int64 `json:"total_expense"`
 }

@@ -135,3 +135,11 @@ func (s *expenseService) GetExpenseList(ctx *gin.Context, expense *model.GetExpe
 	}
 	return list, nil
 }
+
+func (s *expenseService) GetExpenseTotal(ctx *gin.Context, expense *model.GetExpenseTotal) (*model.ResponseExpenseTotal, error) {
+	total, err := s.repo.GetExpenseTotal(ctx, expense)
+	if err != nil {
+		return nil, err
+	}
+	return total, err
+}

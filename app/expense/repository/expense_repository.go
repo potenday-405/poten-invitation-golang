@@ -108,3 +108,35 @@ func (r *expenseRepository) GetExpenseList(ctx *gin.Context, expense *model.GetE
 	}
 	return expenses, err
 }
+
+func (r *expenseRepository) GetExpenseTotal(ctx *gin.Context, expense *model.GetExpenseTotal) (*model.ResponseExpenseTotal, error) {
+	var total model.ResponseExpenseTotal
+	db := r.externalDB.Select("sum(b.amount), count(1)").
+		Table("event a").
+		Joins("JOIN attendees b ON a.event_id = b.event_id").
+		Where("a.user_id = ?", expense.UserID)
+	if expense.Offset != "" {
+		switch expense.OffsetOrderType {
+		case 1:
+			db.Where("a.created_at < ?", util.StringToTime(expense.Offset).UTC())
+		case 2:
+			db.Where("a.created_at <= ?", util.StringToTime(expense.Offset).UTC())
+		case 3:
+			db.Where("a.created_at > ?", util.StringToTime(expense.Offset).UTC())
+		case 4:
+			db.Where("a.created_at >= ?", util.StringToTime(expense.Offset).UTC())
+		default:
+			db.Where("a.created_at >= ?", util.StringToTime(expense.Offset).UTC())
+		}
+	}
+	switch expense.IsInvited {
+	case "invited":
+		db.Where("a.is_invited = 1")
+	case "inviting":
+		db.Where("a.is_invited = 2")
+	}
+	if err := db.Group("a.user_id").Scan(&total).Error; err != nil {
+		return nil, err
+	}
+	return &total, nil
+}
