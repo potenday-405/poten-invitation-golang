@@ -66,10 +66,13 @@ func (s *expenseService) UpdateExpense(ctx *gin.Context, expense *model.UpdateEx
 	}
 
 	// 이전 정보 (점수 계산에 필요)
-	//oldEvent, err := s.repo.GetExpenseByEventID(ctx, event.EventID)
-	//if err != nil {
-	//	return nil, err
-	//}
+	oldEvent, err := s.repo.GetExpenseByEventID(ctx, event.EventID)
+	if err != nil {
+		return nil, err
+	}
+	if oldEvent == nil {
+		return nil, errors.New("invalid event_id")
+	}
 
 	// 수정한다.
 	if err = s.repo.GetTransaction(ctx).Transaction(func(tx *gorm.DB) error {
