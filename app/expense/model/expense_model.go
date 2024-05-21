@@ -82,6 +82,11 @@ type DeleteExpense struct {
 	EventID string `json:"event_id" binding:"required"`
 }
 
+type GetExpense struct {
+	UserID  string `json:"user_id"`
+	EventID string `json:"event_id" binding:"required"`
+}
+
 //=====ENTITY=====
 
 type Event struct {
