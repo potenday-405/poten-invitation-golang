@@ -116,7 +116,7 @@ func (r *expenseRepository) GetExpenseList(ctx *gin.Context, expense *model.GetE
 	}
 	db.Limit(expense.Limit)
 	db.Offset(expense.Limit * (expense.Page - 1))
-	err := db.Scan(&expenses).Error
+	err = db.Scan(&expenses).Error
 	if err != nil {
 		return nil, err
 	}
