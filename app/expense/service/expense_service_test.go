@@ -17,7 +17,7 @@ import (
 var testService domain.ExpenseService
 
 func testInitializer() {
-	if err := godotenv.Load("../../../.env"); err != nil {
+	if err := godotenv.Load("../../../env/.env"); err != nil {
 		log.Fatal(err)
 	}
 	db := external.NewDB()
