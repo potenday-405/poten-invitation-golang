@@ -34,8 +34,9 @@ func (t *CreateExpense) ToEntity() (*Event, *Attendees, error) {
 	event := Event{
 		UserID:       t.UserID,
 		IsInvited:    isInvited(t.IsInvited).GetIntValue(),
-		EventDate:    util.StringToTime(t.EventDate).UTC(),
+		EventDate:    util.StringToTime(t.EventDate),
 		InvitationID: 1,
+		InviteStatus: "act",
 	}
 	attendees := Attendees{
 		Name:        t.Name,
@@ -62,12 +63,14 @@ type UpdateExpense struct {
 
 func (t *UpdateExpense) ToEntity() (*Event, *Attendees, error) {
 	event := Event{
+		EventID:      t.EventID,
 		UserID:       t.UserID,
 		IsInvited:    isInvited(t.IsInvited).GetIntValue(),
-		EventDate:    util.StringToTime(t.EventDate).UTC(),
+		EventDate:    util.StringToTime(t.EventDate),
 		InvitationID: 1,
 	}
 	attendees := Attendees{
+		EventID:     t.EventID,
 		Name:        t.Name,
 		Relation:    t.Relation,
 		Amount:      t.Expense,
@@ -80,6 +83,7 @@ func (t *UpdateExpense) ToEntity() (*Event, *Attendees, error) {
 
 type DeleteExpense struct {
 	EventID string `json:"event_id" binding:"required"`
+	UserID  string `json:"user_id"`
 }
 
 type GetExpense struct {
@@ -108,6 +112,7 @@ type GetExpenseSearch struct {
 	UserID    string `json:"user_id"`
 	IsInvited string `json:"is_invited" binding:"required"`
 	Name      string `json:"name" binding:"required"`
+	Order     string `json:"order"`
 }
 
 //=====ENTITY=====
@@ -155,7 +160,7 @@ type ResponseExpense struct {
 }
 
 type ResponseExpenseTotal struct {
-	IsInvited    int8  `json:"is_invited"`
-	ExpenseCount int   `json:"expense_count"`
-	ExpenseTotal int64 `json:"total_expense"`
+	IsInvited    string `json:"is_invited"`
+	ExpenseCount int    `json:"expense_count"`
+	ExpenseTotal int64  `json:"total_expense"`
 }

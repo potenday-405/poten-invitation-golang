@@ -43,16 +43,18 @@ func (r *expenseRepository) GetExpenseByEventID(ctx *gin.Context, eventID string
 		Table("event a").
 		Joins("JOIN attendees b ON a.event_id = b.event_id").
 		Where("a.event_id = ?", eventID).
+		Where("a.invite_status = 'act'").
 		Scan(&expense).Error; err != nil {
 		return nil, err
 	}
 	return &expense, nil
 }
 
-func (r *expenseRepository) DeleteExpense(ctx *gin.Context, eventID string) error {
+func (r *expenseRepository) DeleteExpense(ctx *gin.Context, userID, eventID string) error {
 	if r.externalDB.Table("event").
-		Update("invite_status = ?", "del").
-		Where("event_id = ?", eventID).RowsAffected == 0 {
+		Where("event_id = ?", eventID).
+		Where("user_id = ?", userID).
+		Update("invite_status", "del").RowsAffected == 0 {
 		return errors.New("invalid parameter event_id")
 	}
 	return nil
@@ -65,6 +67,7 @@ func (r *expenseRepository) GetExpense(ctx *gin.Context, userID, eventID string)
 		Joins("JOIN attendees b ON a.event_id = b.event_id").
 		Where("a.event_id = ?", eventID).
 		Where("a.user_id = ?", userID).
+		Where("a.invite_status = 'act'").
 		First(&expense).Error
 	if err != nil {
 		return nil, err
@@ -77,19 +80,26 @@ func (r *expenseRepository) GetExpenseList(ctx *gin.Context, expense *model.GetE
 	db := r.externalDB.Select("a.event_id, a.user_id, a.is_invited, a.event_date, b.name, b.relation, b.amount, b.is_attended").
 		Table("event a").
 		Joins("JOIN attendees b ON a.event_id = b.event_id").
-		Where("a.user_id = ?", expense.UserID)
+		Where("a.user_id = ?", expense.UserID).
+		Where("a.invite_status = 'act'")
+	switch expense.IsInvited {
+	case "invited":
+		db.Where("a.is_invited = ?", 1)
+	case "inviting":
+		db.Where("a.is_invited = ?", 2)
+	}
 	if expense.Offset != "" {
 		switch expense.OffsetOrderType {
 		case 1:
-			db.Where("a.event_date < ?", util.StringToTime(expense.Offset).UTC())
+			db.Where("a.event_date < ?", util.StringToTime(expense.Offset))
 		case 2:
-			db.Where("a.event_date <= ?", util.StringToTime(expense.Offset).UTC())
+			db.Where("a.event_date <= ?", util.StringToTime(expense.Offset))
 		case 3:
-			db.Where("a.event_date > ?", util.StringToTime(expense.Offset).UTC())
+			db.Where("a.event_date > ?", util.StringToTime(expense.Offset))
 		case 4:
-			db.Where("a.event_date >= ?", util.StringToTime(expense.Offset).UTC())
+			db.Where("a.event_date >= ?", util.StringToTime(expense.Offset))
 		default:
-			db.Where("a.event_date >= ?", util.StringToTime(expense.Offset).UTC())
+			db.Where("a.event_date >= ?", util.StringToTime(expense.Offset))
 		}
 	}
 	switch expense.Order {
@@ -111,22 +121,24 @@ func (r *expenseRepository) GetExpenseList(ctx *gin.Context, expense *model.GetE
 
 func (r *expenseRepository) GetExpenseTotal(ctx *gin.Context, expense *model.GetExpenseTotal) (*model.ResponseExpenseTotal, error) {
 	var total model.ResponseExpenseTotal
-	db := r.externalDB.Select("sum(b.amount), count(1)").
+	total.IsInvited = expense.IsInvited
+	db := r.externalDB.Select("sum(b.amount) as expense_total, count(1) as expense_count").
 		Table("event a").
 		Joins("JOIN attendees b ON a.event_id = b.event_id").
-		Where("a.user_id = ?", expense.UserID)
+		Where("a.user_id = ?", expense.UserID).
+		Where("a.invite_status = 'act'")
 	if expense.Offset != "" {
 		switch expense.OffsetOrderType {
 		case 1:
-			db.Where("a.created_at < ?", util.StringToTime(expense.Offset).UTC())
+			db.Where("a.created_at < ?", util.StringToTime(expense.Offset))
 		case 2:
-			db.Where("a.created_at <= ?", util.StringToTime(expense.Offset).UTC())
+			db.Where("a.created_at <= ?", util.StringToTime(expense.Offset))
 		case 3:
-			db.Where("a.created_at > ?", util.StringToTime(expense.Offset).UTC())
+			db.Where("a.created_at > ?", util.StringToTime(expense.Offset))
 		case 4:
-			db.Where("a.created_at >= ?", util.StringToTime(expense.Offset).UTC())
+			db.Where("a.created_at >= ?", util.StringToTime(expense.Offset))
 		default:
-			db.Where("a.created_at >= ?", util.StringToTime(expense.Offset).UTC())
+			db.Where("a.created_at >= ?", util.StringToTime(expense.Offset))
 		}
 	}
 	switch expense.IsInvited {
@@ -134,6 +146,8 @@ func (r *expenseRepository) GetExpenseTotal(ctx *gin.Context, expense *model.Get
 		db.Where("a.is_invited = 1")
 	case "inviting":
 		db.Where("a.is_invited = 2")
+	default:
+		total.IsInvited = "all"
 	}
 	if err := db.Group("a.user_id").Scan(&total).Error; err != nil {
 		return nil, err
@@ -146,14 +160,24 @@ func (r *expenseRepository) GetExpenseSearch(ctx *gin.Context, expense *model.Ge
 	db := r.externalDB.Select("a.event_id, a.user_id, a.is_invited, a.event_date, b.name, b.relation, b.amount, b.is_attended").
 		Table("event a").
 		Joins("JOIN attendees b ON a.event_id = b.event_id").
-		Where("a.user_id = ?", expense.UserID)
+		Where("a.user_id = ?", expense.UserID).
+		Where("a.invite_status = 'act'")
 	switch expense.IsInvited {
 	case "invited":
 		db.Where("a.is_invited = 1")
 	case "inviting":
 		db.Where("a.is_invited = 2")
 	}
-	if err := db.Where("b.name LIKE '%?%'", expense.Name).Scan(&expenses).Error; err != nil {
+	db.Where("b.name LIKE ?", "%"+expense.Name+"%")
+	switch expense.Order {
+	case "asc":
+		db.Order("a.event_date asc")
+	case "desc":
+		db.Order("a.event_date desc")
+	default:
+		db.Order("a.event_date desc")
+	}
+	if err := db.Scan(&expenses).Error; err != nil {
 		return nil, err
 	}
 	return expenses, nil
