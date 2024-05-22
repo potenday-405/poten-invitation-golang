@@ -23,17 +23,12 @@ func main() {
 	// 프로젝트 폴더 구조를 저장할 슬라이스
 	projectStructure := make([]string, 0)
 
-	// 현재 디렉토리부터 하위 디렉토리들을 순회하며 폴더 구조를 뽑아냅니다.
+	// 현재 디렉토리부터 하위 디렉토리 및 파일들을 순회하며 폴더 구조를 뽑아냅니다.
 	filepath.Walk(currentDir, func(path string, info os.FileInfo, err error) error {
 		// 에러 처리
 		if err != nil {
 			fmt.Println("폴더 순회 중 에러 발생:", err)
 			return err
-		}
-
-		// 파일이 아닌 폴더만 처리
-		if !info.IsDir() {
-			return nil
 		}
 
 		// 현재 디렉토리 경로를 제외하고 출력
