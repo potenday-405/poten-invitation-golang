@@ -1,7 +1,9 @@
 package controller
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"net/http"
 	"poten-invitation-golang/app/expense/model"
 	"poten-invitation-golang/domain"
@@ -68,6 +70,7 @@ func (c *expenseController) DeleteExpense(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
+	expense.UserID = userID
 	if err := c.service.DeleteExpense(ctx, &expense); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 	}
@@ -89,7 +92,7 @@ func (c *expenseController) GetExpense(ctx *gin.Context) {
 	}
 	expense.UserID = userID
 	res, err := c.service.GetExpense(ctx, &expense)
-	if err != nil {
+	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": err})
 	}
 	ctx.JSON(http.StatusOK, res)

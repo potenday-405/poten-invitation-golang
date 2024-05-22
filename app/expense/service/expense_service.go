@@ -35,11 +35,19 @@ func (s *expenseService) CreateExpense(ctx *gin.Context, expense *model.CreateEx
 
 	// 생성한다.
 	if err = s.repo.GetTransaction(ctx).Transaction(func(tx *gorm.DB) error {
-		if affected := tx.Create(event).RowsAffected; affected == 0 {
+		eventResult := tx.Create(event)
+		if eventResult.Error != nil {
+			return eventResult.Error
+		}
+		if eventResult.RowsAffected == 0 {
 			return errors.New("event create failed")
 		}
-		if affected := tx.Create(attendee).RowsAffected; affected == 0 {
-			return errors.New("attendee create failed")
+		attendeeResult := tx.Create(attendee)
+		if attendeeResult.Error != nil {
+			return attendeeResult.Error
+		}
+		if attendeeResult.RowsAffected == 0 {
+			return errors.New("event create failed")
 		}
 		return nil
 	}); err != nil {
@@ -76,11 +84,20 @@ func (s *expenseService) UpdateExpense(ctx *gin.Context, expense *model.UpdateEx
 
 	// 수정한다.
 	if err = s.repo.GetTransaction(ctx).Transaction(func(tx *gorm.DB) error {
-		if affected := tx.Updates(event).RowsAffected; affected == 0 {
-			return errors.New("event create failed")
+		// TODO UpdateColumn으로 변경 필요. 현재는 ID도 update하기에 문제가 생길 수 있다
+		eventResult := tx.Table("event a").Where("a.event_id = ?", event.EventID).Where("a.user_id = ?", event.UserID).Updates(&event)
+		if eventResult.Error != nil {
+			return eventResult.Error
 		}
-		if affected := tx.Updates(attendee).RowsAffected; affected == 0 {
-			return errors.New("attendee create failed")
+		if eventResult.RowsAffected == 0 {
+			return errors.New("event update failed")
+		}
+		attendeeResult := tx.Where("event_id = ?", event.EventID).Updates(attendee)
+		if attendeeResult.Error != nil {
+			return attendeeResult.Error
+		}
+		if attendeeResult.RowsAffected == 0 {
+			return errors.New("attendee update failed")
 		}
 		return nil
 	}); err != nil {
@@ -104,7 +121,7 @@ func (s *expenseService) DeleteExpense(ctx *gin.Context, expense *model.DeleteEx
 	//if err != nil {
 	//	return err
 	//}
-	if err := s.repo.DeleteExpense(ctx, expense.EventID); err != nil {
+	if err := s.repo.DeleteExpense(ctx, expense.UserID, expense.EventID); err != nil {
 		return err
 	}
 	// TODO 점수 삭제(유저에 요청) 이전 정보에서 참석여부 정보 확인 + 생성 점수 삭제 요청
