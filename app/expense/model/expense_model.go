@@ -31,10 +31,14 @@ type CreateExpense struct {
 }
 
 func (t *CreateExpense) ToEntity() (*Event, *Attendees, error) {
+	eventDate, err := util.StringToTime(t.EventDate)
+	if err != nil {
+		return nil, nil, err
+	}
 	event := Event{
 		UserID:       t.UserID,
 		IsInvited:    isInvited(t.IsInvited).GetIntValue(),
-		EventDate:    util.StringToTime(t.EventDate),
+		EventDate:    eventDate,
 		InvitationID: 1,
 		InviteStatus: "act",
 	}
@@ -62,11 +66,15 @@ type UpdateExpense struct {
 }
 
 func (t *UpdateExpense) ToEntity() (*Event, *Attendees, error) {
+	eventDate, err := util.StringToTime(t.EventDate)
+	if err != nil {
+		return nil, nil, err
+	}
 	event := Event{
 		EventID:      t.EventID,
 		UserID:       t.UserID,
 		IsInvited:    isInvited(t.IsInvited).GetIntValue(),
-		EventDate:    util.StringToTime(t.EventDate),
+		EventDate:    eventDate,
 		InvitationID: 1,
 	}
 	attendees := Attendees{
