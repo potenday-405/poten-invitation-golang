@@ -14,14 +14,14 @@ func GetRouter(expenseController domain.ExpenseController) *gin.Engine {
 			"message": "pong",
 		})
 	})
-	r.Group("/invitation")
-	r.POST("/expense", expenseController.CreateExpense)
-	r.PUT("/expense", expenseController.UpdateExpense)
-	r.DELETE("/expense", expenseController.DeleteExpense)
-	r.GET("/expense", expenseController.GetExpense)
-	r.GET("/expenses", expenseController.GetExpenseList)
-	r.GET("/expense/total", expenseController.GetExpenseTotal)
-	r.GET("/expense/search", expenseController.GetExpenseSearch)
+	group := r.Group("/invitation")
+	group.POST("/expense", expenseController.CreateExpense)
+	group.PUT("/expense", expenseController.UpdateExpense)
+	group.DELETE("/expense", expenseController.DeleteExpense)
+	group.GET("/expense", expenseController.GetExpense)
+	group.GET("/expenses", expenseController.GetExpenseList)
+	group.GET("/expense/total", expenseController.GetExpenseTotal)
+	group.GET("/expense/search", expenseController.GetExpenseSearch)
 
 	return r
 }
