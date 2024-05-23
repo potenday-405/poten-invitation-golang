@@ -111,14 +111,14 @@ type GetExpenseList struct {
 
 type GetExpenseTotal struct {
 	UserID          string `json:"user_id"`
-	IsInvited       string `json:"is_invited" binding:"required"`
+	IsInvited       string `json:"is_invited"`
 	Offset          string `json:"offset"`
 	OffsetOrderType int8   `json:"offset_order_type"`
 }
 
 type GetExpenseSearch struct {
 	UserID    string `json:"user_id"`
-	IsInvited string `json:"is_invited" binding:"required"`
+	IsInvited string `json:"is_invited"`
 	Name      string `json:"name" binding:"required"`
 	Order     string `json:"order"`
 }
