@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"encoding/json"
+	"bytes"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -33,12 +33,13 @@ func (c *expenseController) CreateExpense(ctx *gin.Context) {
 		return
 	}
 
-	// TODO remove this
-	bodyAsByteArray, _ := ioutil.ReadAll(ctx.Request.Body)
-	jsonBody := string(bodyAsByteArray)
-	indent, _ := json.MarshalIndent(string(jsonBody), "", "  ")
-	log.Printf("CreateExpense Json Body String: %v", indent)
-	// TODO remove this
+	// TODO REMOVE THIS
+	buf := make([]byte, 1024)
+	num, _ := ctx.Request.Body.Read(buf)
+	reqBody := string(buf[0:num])
+	log.Printf("CreateExpense Json Body String: %v", reqBody)
+	ctx.Request.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(reqBody))) // Write body back
+	// TODO REMOVE THIS
 
 	if err := ctx.ShouldBind(&expense); err != nil {
 		log.Printf("error: parameter error: %v", err)
