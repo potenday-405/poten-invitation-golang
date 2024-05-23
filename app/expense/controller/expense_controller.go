@@ -25,11 +25,6 @@ func NewExpenseController(service domain.ExpenseService) domain.ExpenseControlle
 
 func (c *expenseController) CreateExpense(ctx *gin.Context) {
 	var expense model.CreateExpense
-	if err := ctx.ShouldBind(&expense); err != nil {
-		log.Printf("error: parameter error: %v", err)
-		ctx.JSON(http.StatusBadRequest, gin.H{"detail": err.Error()})
-		return
-	}
 	// TODO REMOVE THIS
 	buf := make([]byte, 1024)
 	num, _ := ctx.Request.Body.Read(buf)
@@ -37,6 +32,11 @@ func (c *expenseController) CreateExpense(ctx *gin.Context) {
 	log.Printf("CreateExpense Json Body String: %v", reqBody)
 	ctx.Request.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(reqBody))) // Write body back
 	// TODO REMOVE THIS
+	if err := ctx.ShouldBind(&expense); err != nil {
+		log.Printf("error: parameter error: %v", err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"detail": err.Error()})
+		return
+	}
 	expense.UserID = ctx.Request.Header.Get("user_id")
 	log.Printf("Create Expense user_id Log: %v", expense.UserID)
 	if expense.UserID == "" {
