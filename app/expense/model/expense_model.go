@@ -38,7 +38,7 @@ func (t *CreateExpense) ToEntity() (*Event, *Attendees, error) {
 	event := Event{
 		UserID:       t.UserID,
 		IsInvited:    isInvited(t.IsInvited).GetIntValue(),
-		EventDate:    eventDate,
+		EventDate:    *eventDate,
 		InvitationID: 1,
 		InviteStatus: "act",
 	}
@@ -74,7 +74,7 @@ func (t *UpdateExpense) ToEntity() (*Event, *Attendees, error) {
 		EventID:      t.EventID,
 		UserID:       t.UserID,
 		IsInvited:    isInvited(t.IsInvited).GetIntValue(),
-		EventDate:    eventDate,
+		EventDate:    *eventDate,
 		InvitationID: 1,
 	}
 	attendees := Attendees{

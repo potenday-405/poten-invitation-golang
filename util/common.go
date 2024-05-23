@@ -7,13 +7,16 @@ import (
 	"time"
 )
 
-func StringToTime(t string) (time.Time, error) {
+func StringToTime(t string) (*time.Time, error) {
+	if len(t) == 0 {
+		return nil, nil
+	}
 	if len(t) != 12 {
-		return time.Time{}, errors.New("invalid time parameter")
+		return nil, errors.New("invalid time parameter")
 	}
 	re := regexp.MustCompile(`^[0-9]+$`)
 	if !re.MatchString(t) {
-		return time.Time{}, errors.New("invalid time parameter")
+		return nil, errors.New("invalid time parameter")
 	}
 	year, _ := strconv.Atoi(t[0:4])
 	month, _ := strconv.Atoi(t[4:6])
@@ -22,5 +25,6 @@ func StringToTime(t string) (time.Time, error) {
 	minute, _ := strconv.Atoi(t[10:12])
 
 	// time.Time 객체를 생성합니다.
-	return time.Date(year, time.Month(month), day, hour, minute, 0, 0, time.Local), nil
+	date := time.Date(year, time.Month(month), day, hour, minute, 0, 0, time.Local)
+	return &date, nil
 }

@@ -92,7 +92,7 @@ func (r *expenseRepository) GetExpenseList(ctx *gin.Context, expense *model.GetE
 	if err != nil {
 		return nil, err
 	}
-	if expense.Offset != "" {
+	if eventDate != nil {
 		switch expense.OffsetOrderType {
 		case 1:
 			db.Where("a.event_date < ?", eventDate)
@@ -135,7 +135,7 @@ func (r *expenseRepository) GetExpenseTotal(ctx *gin.Context, expense *model.Get
 	if err != nil {
 		return nil, err
 	}
-	if expense.Offset != "" {
+	if eventDate != nil {
 		switch expense.OffsetOrderType {
 		case 1:
 			db.Where("a.created_at < ?", eventDate)
