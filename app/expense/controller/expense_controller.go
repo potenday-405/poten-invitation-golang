@@ -22,19 +22,20 @@ func NewExpenseController(service domain.ExpenseService) domain.ExpenseControlle
 }
 
 func (c *expenseController) CreateExpense(ctx *gin.Context) {
-	userID := ctx.Request.Header.Get("user_id")
-	if userID == "" {
+	var expense model.CreateExpense
+	expense.UserID = ctx.Request.Header.Get("user_id")
+	log.Printf("Create Expense user_id Log: %v", expense.UserID)
+	if expense.UserID == "" {
 		log.Println("error: user_id not exist")
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid token, user id not exist"})
 		return
 	}
-	var expense model.CreateExpense
 	if err := ctx.ShouldBind(&expense); err != nil {
 		log.Printf("error: parameter error: %v", err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
-	expense.UserID = userID
+	log.Printf("Create Expense Parameter Log: %v", expense)
 	res, err := c.service.CreateExpense(ctx, &expense)
 	if err != nil {
 		log.Printf("error: CreateExpense API error: %v", err)
@@ -45,19 +46,20 @@ func (c *expenseController) CreateExpense(ctx *gin.Context) {
 }
 
 func (c *expenseController) UpdateExpense(ctx *gin.Context) {
-	userID := ctx.Request.Header.Get("user_id")
-	if userID == "" {
+	var expense model.UpdateExpense
+	expense.UserID = ctx.Request.Header.Get("user_id")
+	log.Printf("Create Expense user_id Log: %v", expense.UserID)
+	if expense.UserID == "" {
 		log.Println("error: user_id not exist")
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid token, user id not exist"})
 		return
 	}
-	var expense model.UpdateExpense
 	if err := ctx.ShouldBind(&expense); err != nil {
 		log.Printf("error: parameter error: %v", err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
-	expense.UserID = userID
+	log.Printf("Create Expense Parameter Log: %v", expense)
 	res, err := c.service.UpdateExpense(ctx, &expense)
 	if err != nil {
 		log.Printf("error: UpdateExpense API error: %v", err)
@@ -70,6 +72,7 @@ func (c *expenseController) UpdateExpense(ctx *gin.Context) {
 func (c *expenseController) DeleteExpense(ctx *gin.Context) {
 	var expense model.DeleteExpense
 	expense.UserID = ctx.Request.Header.Get("user_id")
+	log.Printf("Create Expense user_id Log: %v", expense.UserID)
 	if expense.UserID == "" {
 		log.Println("error: user_id not exist")
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid token, user id not exist"})
@@ -81,6 +84,7 @@ func (c *expenseController) DeleteExpense(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": errors.New("parameter event_id not exist")})
 		return
 	}
+	log.Printf("Create Expense Parameter Log: %v", expense)
 	if err := c.service.DeleteExpense(ctx, &expense); err != nil {
 		log.Printf("error: DeleteExpense API error: %v", err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
@@ -93,6 +97,7 @@ func (c *expenseController) DeleteExpense(ctx *gin.Context) {
 func (c *expenseController) GetExpense(ctx *gin.Context) {
 	var expense model.GetExpense
 	expense.UserID = ctx.Request.Header.Get("user_id")
+	log.Printf("Create Expense user_id Log: %v", expense.UserID)
 	if expense.UserID == "" {
 		log.Println("error: user_id not exist")
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid token, user id not exist"})
@@ -104,6 +109,7 @@ func (c *expenseController) GetExpense(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": errors.New("event_id not exist")})
 		return
 	}
+	log.Printf("Create Expense Parameter Log: %v", expense)
 	res, err := c.service.GetExpense(ctx, &expense)
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		log.Printf("error: GetExpense API error: %v", err)
@@ -115,6 +121,7 @@ func (c *expenseController) GetExpense(ctx *gin.Context) {
 func (c *expenseController) GetExpenseList(ctx *gin.Context) {
 	var expense model.GetExpenseList
 	expense.UserID = ctx.Request.Header.Get("user_id")
+	log.Printf("Create Expense user_id Log: %v", expense.UserID)
 	if expense.UserID == "" {
 		log.Println("error: user_id not exist")
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid token, user id not exist"})
@@ -128,6 +135,7 @@ func (c *expenseController) GetExpenseList(ctx *gin.Context) {
 	expense.Order = ctx.Query("order")
 	expense.Limit = limit
 	expense.Page = page
+	log.Printf("Create Expense Parameter Log: %v", expense)
 	res, err := c.service.GetExpenseList(ctx, &expense)
 	if err != nil {
 		log.Printf("error: GetExpenseList API error: %v", err)
@@ -139,6 +147,7 @@ func (c *expenseController) GetExpenseList(ctx *gin.Context) {
 func (c *expenseController) GetExpenseTotal(ctx *gin.Context) {
 	var expense model.GetExpenseTotal
 	expense.UserID = ctx.Request.Header.Get("user_id")
+	log.Printf("Create Expense user_id Log: %v", expense.UserID)
 	if expense.UserID == "" {
 		log.Println("error: user_id not exist")
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid token, user id not exist"})
@@ -152,6 +161,7 @@ func (c *expenseController) GetExpenseTotal(ctx *gin.Context) {
 	offsetOrderType, _ := strconv.Atoi(ctx.Query("offset_order_type"))
 	expense.Offset = ctx.Query("offset")
 	expense.OffsetOrderType = int8(offsetOrderType)
+	log.Printf("Create Expense Parameter Log: %v", expense)
 	res, err := c.service.GetExpenseTotal(ctx, &expense)
 	if err != nil {
 		log.Printf("error: GetExpenseTotal API error: %v", err)
@@ -163,6 +173,7 @@ func (c *expenseController) GetExpenseTotal(ctx *gin.Context) {
 func (c *expenseController) GetExpenseSearch(ctx *gin.Context) {
 	var expense model.GetExpenseSearch
 	expense.UserID = ctx.Request.Header.Get("user_id")
+	log.Printf("Create Expense user_id Log: %v", expense.UserID)
 	if expense.UserID == "" {
 		log.Println("error: user_id not exist")
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid token, user id not exist"})
@@ -171,6 +182,7 @@ func (c *expenseController) GetExpenseSearch(ctx *gin.Context) {
 	expense.IsInvited = ctx.Query("is_invited")
 	expense.Name = ctx.Query("name")
 	expense.Order = ctx.Query("order")
+	log.Printf("Create Expense Parameter Log: %v", expense)
 	list, err := c.service.GetExpenseSearch(ctx, &expense)
 	if err != nil {
 		log.Printf("error: GetExpenseSearch API error: %v", err)
