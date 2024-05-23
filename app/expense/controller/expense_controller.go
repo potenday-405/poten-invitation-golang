@@ -120,12 +120,6 @@ func (c *expenseController) GetExpenseList(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid token, user id not exist"})
 		return
 	}
-	expense.IsInvited = ctx.Query("is_invited")
-	if expense.IsInvited == "" {
-		log.Printf("error: parameter is_invited not exist")
-		ctx.JSON(http.StatusBadRequest, gin.H{"message": errors.New("parameter is_invited not exist")})
-		return
-	}
 	offsetOrderType, _ := strconv.Atoi(ctx.Query("offset_order_type"))
 	limit, _ := strconv.Atoi(ctx.Query("limit"))
 	page, _ := strconv.Atoi(ctx.Query("page"))
