@@ -1,11 +1,9 @@
 package controller
 
 import (
-	"bytes"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"poten-invitation-golang/app/expense/model"
@@ -32,14 +30,6 @@ func (c *expenseController) CreateExpense(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid token, user id not exist"})
 		return
 	}
-
-	// TODO REMOVE THIS
-	buf := make([]byte, 1024)
-	num, _ := ctx.Request.Body.Read(buf)
-	reqBody := string(buf[0:num])
-	log.Printf("CreateExpense Json Body String: %v", reqBody)
-	ctx.Request.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(reqBody))) // Write body back
-	// TODO REMOVE THIS
 
 	if err := ctx.ShouldBind(&expense); err != nil {
 		log.Printf("error: parameter error: %v", err)
