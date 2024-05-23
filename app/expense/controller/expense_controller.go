@@ -23,17 +23,16 @@ func NewExpenseController(service domain.ExpenseService) domain.ExpenseControlle
 
 func (c *expenseController) CreateExpense(ctx *gin.Context) {
 	var expense model.CreateExpense
+	if err := ctx.ShouldBind(&expense); err != nil {
+		log.Printf("error: parameter error: %v", err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
 	expense.UserID = ctx.Request.Header.Get("user_id")
 	log.Printf("Create Expense user_id Log: %v", expense.UserID)
 	if expense.UserID == "" {
 		log.Println("error: user_id not exist")
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid token, user id not exist"})
-		return
-	}
-
-	if err := ctx.ShouldBind(&expense); err != nil {
-		log.Printf("error: parameter error: %v", err)
-		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 	log.Printf("Create Expense Parameter Log: %v", expense)
