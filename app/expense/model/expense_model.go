@@ -41,6 +41,7 @@ func (t *CreateExpense) ToEntity() (*Event, *Attendees, error) {
 		EventDate:    *eventDate,
 		InvitationID: 1,
 		InviteStatus: "act",
+		Link:         t.Link,
 	}
 	attendees := Attendees{
 		Name:        t.Name,
@@ -76,6 +77,7 @@ func (t *UpdateExpense) ToEntity() (*Event, *Attendees, error) {
 		IsInvited:    isInvited(t.IsInvited).GetIntValue(),
 		EventDate:    *eventDate,
 		InvitationID: 1,
+		Link:         t.Link,
 	}
 	attendees := Attendees{
 		EventID:     t.EventID,
@@ -131,6 +133,7 @@ type Event struct {
 	InvitationID int8
 	IsInvited    int8
 	InviteStatus string
+	Link         string
 	EventDate    time.Time
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
@@ -165,6 +168,7 @@ type ResponseExpense struct {
 	Relation   string    `json:"relation"`
 	Amount     int64     `json:"amount"`
 	IsAttended int8      `json:"is_attended"`
+	Link       string    `json:"link"`
 }
 
 type ResponseExpenseTotal struct {
