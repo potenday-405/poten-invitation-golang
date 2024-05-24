@@ -51,11 +51,6 @@ jobs:
         run: |
           curl -X POST -H "Content-type: application/json" --data "{\"text\":\"Github action failed\"}" ${{ secrets.SWIT_HOOK_URL }}
 
-      - name: switSuccessNotify
-        if: success()
-        run: |
-          curl -X POST -H "Content-type: application/json" --data "{\"text\":\"Github action success\"}" ${{ secrets.SWIT_HOOK_URL }}
-
   deploy:
     # needs를 통해 build job이 수행 성공시에 작업되도록 설정
     needs: build
@@ -76,3 +71,13 @@ jobs:
             sudo docker rm ${{ env.CONTAINER_NAME }}
             sudo docker rmi $(sudo docker images -q ${{ env.DOCKERHUB_REPOSITORY }}/${{ env.IMG_NAME }})
             sudo docker run -d -v /root/env/.env:/app/env/.env --name poten -p 80:8080 ${{ env.DOCKERHUB_REPOSITORY }}/${{ env.IMG_NAME }}
+
+      - name: switFailNotify
+        if: failure()
+        run: |
+          curl -X POST -H "Content-type: application/json" --data "{\"text\":\"Github action failed\"}" ${{ secrets.SWIT_HOOK_URL }}
+
+      - name: switSuccessNotify
+        if: success()
+        run: |
+          curl -X POST -H "Content-type: application/json" --data "{\"text\":\"Github action success\"}" ${{ secrets.SWIT_HOOK_URL }}
