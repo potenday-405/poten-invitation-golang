@@ -13,6 +13,7 @@ func main() {
 	if err := util.EnvInitializer(); err != nil {
 		panic(err)
 	}
+	log.Println("CICD TEST LOG")
 	db := external.NewDB()
 	expenseRepository := repository.NewExpenseRepository(db)
 	expenseService := service.NewExpenseService(expenseRepository)
