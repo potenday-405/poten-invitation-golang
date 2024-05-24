@@ -1,12 +1,16 @@
 package service
 
 import (
+	"encoding/json"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"net/http"
+	"os"
 	"poten-invitation-golang/app/expense/model"
 	"poten-invitation-golang/domain"
+	"poten-invitation-golang/util"
 )
 
 type expenseService struct {
@@ -54,6 +58,15 @@ func (s *expenseService) CreateExpense(ctx *gin.Context, expense *model.CreateEx
 	}
 
 	// TODO 점수준다(유저에 요청) 주의사항: 생성점수 + 불참1 참여2 점수
+	url := "http://" + os.Getenv("USER_SERVER") + "/user/score"
+	body, err := json.Marshal(util.UserScore{Method: http.MethodPost, IsAttended: int(expense.IsAttended)})
+	if err != nil {
+		return nil, err
+	}
+	client, err := util.RestClient(http.MethodPost, url, ctx.Query("access-token"), body)
+	if err != nil && client != 200 {
+		return nil, errors.New("user score request failed")
+	}
 
 	// 데이터 받아온다
 	res, err := s.repo.GetExpenseByEventID(ctx, eventID)
@@ -110,20 +123,38 @@ func (s *expenseService) UpdateExpense(ctx *gin.Context, expense *model.UpdateEx
 	}
 
 	// TODO 점수준다(유저에 요청) 이전정보에서 참석여부 정보 확인 필요. newEvent.IsAttended - oldEvent.IsAttended = 반영 필요한 점수
+	url := "http://" + os.Getenv("USER_SERVER") + "/user/score"
+	body, err := json.Marshal(util.UserScore{Method: http.MethodPost, IsAttended: int(expense.IsAttended)})
+	if err != nil {
+		return nil, err
+	}
+	client, err := util.RestClient(http.MethodPut, url, ctx.Query("access-token"), body)
+	if err != nil && client != 200 {
+		return nil, errors.New("user score request failed")
+	}
 
 	return newEvent, nil
 }
 
 func (s *expenseService) DeleteExpense(ctx *gin.Context, expense *model.DeleteExpense) error {
 	// 이전 정보 (점수 계산에 필요)
-	//oldEvent, err := s.repo.GetExpenseByEventID(ctx, expense.EventID)
-	//if err != nil {
-	//	return err
-	//}
+	oldEvent, err := s.repo.GetExpenseByEventID(ctx, expense.EventID)
+	if err != nil {
+		return err
+	}
 	if err := s.repo.DeleteExpense(ctx, expense.UserID, expense.EventID); err != nil {
 		return err
 	}
 	// TODO 점수 삭제(유저에 요청) 이전 정보에서 참석여부 정보 확인 + 생성 점수 삭제 요청
+	url := "http://" + os.Getenv("USER_SERVER") + "/user/score"
+	body, err := json.Marshal(util.UserScore{Method: http.MethodPost, IsAttended: int(oldEvent.IsAttended)})
+	if err != nil {
+		return err
+	}
+	client, err := util.RestClient(http.MethodDelete, url, ctx.Query("access-token"), body)
+	if err != nil && client != 200 {
+		return errors.New("user score request failed")
+	}
 	return nil
 }
 
