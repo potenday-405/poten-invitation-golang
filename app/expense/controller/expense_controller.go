@@ -168,6 +168,7 @@ func (c *expenseController) GetExpenseTotal(ctx *gin.Context) {
 		return
 	}
 	offsetOrderType, _ := strconv.Atoi(ctx.Query("offset_order_type"))
+	expense.IsInvited = ctx.Query("is_invited")
 	expense.Offset = ctx.Query("offset")
 	expense.OffsetOrderType = int8(offsetOrderType)
 	log.Printf("Create Expense Parameter Log: %v", expense)

@@ -25,7 +25,6 @@ func (s *expenseService) CreateExpense(ctx *gin.Context, expense *model.CreateEx
 	if err != nil {
 		return nil, err
 	}
-
 	// uuid 생성
 	eventID := uuid.New().String()
 	attendeeID := uuid.New().String()
