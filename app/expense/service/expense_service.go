@@ -58,7 +58,7 @@ func (s *expenseService) CreateExpense(ctx *gin.Context, expense *model.CreateEx
 	}
 
 	url := "http://" + os.Getenv("USER_SERVER") + "/user/score"
-	body, err := json.Marshal(util.UserScore{Method: http.MethodPost, IsAttended: int(expense.IsAttended)})
+	body, err := json.Marshal(util.UserScore{Method: http.MethodPost, IsAttended: int(expense.IsAttended), InvitationType: "Wedding"})
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +123,7 @@ func (s *expenseService) UpdateExpense(ctx *gin.Context, expense *model.UpdateEx
 
 	// TODO 점수준다(유저에 요청) 이전정보에서 참석여부 정보 확인 필요. newEvent.IsAttended - oldEvent.IsAttended = 반영 필요한 점수
 	url := "http://" + os.Getenv("USER_SERVER") + "/user/score"
-	body, err := json.Marshal(util.UserScore{Method: http.MethodPost, IsAttended: int(expense.IsAttended)})
+	body, err := json.Marshal(util.UserScore{Method: http.MethodPost, IsAttended: int(expense.IsAttended), InvitationType: "Wedding"})
 	if err != nil {
 		return nil, err
 	}
@@ -146,7 +146,7 @@ func (s *expenseService) DeleteExpense(ctx *gin.Context, expense *model.DeleteEx
 	}
 	// TODO 점수 삭제(유저에 요청) 이전 정보에서 참석여부 정보 확인 + 생성 점수 삭제 요청
 	url := "http://" + os.Getenv("USER_SERVER") + "/user/score"
-	body, err := json.Marshal(util.UserScore{Method: http.MethodPost, IsAttended: int(oldEvent.IsAttended)})
+	body, err := json.Marshal(util.UserScore{Method: http.MethodPost, IsAttended: int(oldEvent.IsAttended), InvitationType: "Wedding"})
 	if err != nil {
 		return err
 	}

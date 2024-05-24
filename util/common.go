@@ -10,8 +10,9 @@ import (
 )
 
 type UserScore struct {
-	Method     string `json:"method"`
-	IsAttended int    `json:"is_attended"`
+	Method         string `json:"method"`
+	IsAttended     int    `json:"is_attended"`
+	InvitationType string `json:"invitation_type"`
 }
 
 func StringToTime(t string) (*time.Time, error) {
