@@ -108,11 +108,11 @@ func (r *expenseRepository) GetExpenseList(ctx *gin.Context, expense *model.GetE
 	}
 	switch expense.Order {
 	case "asc":
-		db.Order("a.created_at asc")
+		db.Order("a.event_date asc")
 	case "desc":
-		db.Order("a.created_at desc")
+		db.Order("a.event_date desc")
 	default:
-		db.Order("a.created_at desc")
+		db.Order("a.event_date desc")
 	}
 	db.Limit(expense.Limit)
 	db.Offset(expense.Limit * (expense.Page - 1))
