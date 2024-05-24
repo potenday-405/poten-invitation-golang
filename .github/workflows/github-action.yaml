@@ -6,8 +6,10 @@ on:
       - master
 
 env:
-  DEPLOYMENT_NAME: coen-chat-deployment # k8s deployment name
+#  DEPLOYMENT_NAME: coen-chat-deployment # k8s deployment name # k8s 사용하지 않기로 하여 주석처리
+  DOCKERHUB_REPOSITORY: parkhyuntae
   IMG_NAME: poten-test # docker image name
+  CONTAINER_NAME: poten
 
 jobs:
   build:
@@ -39,31 +41,38 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            parkhyuntae/${{ env.IMG_NAME }}:latest
-            parkhyuntae/${{ steps.metadata.outputs.tags }}
+            ${{ DOCKERHUB_REPOSITORY }}/${{ env.IMG_NAME }}:latest
+            ${{ DOCKERHUB_REPOSITORY }}/${{ steps.metadata.outputs.tags }}
 #            ${{ github.repository_owner }}/${{ env.IMG_NAME }}:latest
 #            ${{ github.repository_owner }}/${{ steps.metadata.outputs.tags }}
-
-#      - id: "auth"
-#        name: 'Authenticate to Google Cloud'
-#        uses: 'google-github-actions/auth@v1'
-#        with:
-#          credentials_json: '${{ secrets.GCP_ACCESS_KEY }}'
-#
-#      - id: 'test'
-#        uses: 'google-github-actions/ssh-compute@v0'
-#        with:
-#          instance_name: '${{ secrets.GCP_INSTANCE }}'
-#          zone: '${{ secrets.GCP_INSTANCE_ZONE }}'
-#          ssh_private_key: '${{ secrets.GCP_SSH_PRIVATE_KEY }}'
-#          command: 'sudo kubectl set image deployments.apps/${{ env.DEPLOYMENT_NAME }} ${{ env.DEPLOYMENT_NAME }}=${{ github.repository_owner }}/${{ steps.metadata.outputs.tags }}'
 
       - name: switFailNotify
         if: failure()
         run: |
-          curl -X POST -H "Content-type: application/json" --data "{\"text\":\"Github action failed\"}" https://hook.swit.io/chat/230704020620x2fEHM4/lV8EFcPY5xpR7qldXhZO?organization_id=19090600325683321
+          curl -X POST -H "Content-type: application/json" --data "{\"text\":\"Github action failed\"}" ${{ secrets.SWIT_HOOK_URL }}
 
       - name: switSuccessNotify
         if: success()
         run: |
-          curl -X POST -H "Content-type: application/json" --data "{\"text\":\"Github action success\"}" https://hook.swit.io/chat/230704020620x2fEHM4/lV8EFcPY5xpR7qldXhZO?organization_id=19090600325683321
+          curl -X POST -H "Content-type: application/json" --data "{\"text\":\"Github action success\"}" ${{ secrets.SWIT_HOOK_URL }}
+
+  deploy:
+    # needs를 통해 build job이 수행 성공시에 작업되도록 설정
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    # NCP 로그인
+      - name: NCP login, stop and remove docker image, and Run
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.NCP_INVITATION_HOST }}
+          username: ${{ secrets.NCP_INVITATION_USERNAME }}
+          password: ${{ secrets.NCP_INVITATION_PASSWORD }}
+          port: ${{ secrets.NCP_INVITATION_PORT }}
+
+          script: |
+            sudo docker stop ${{ env.CONTAINER_NAME }}
+            sudo docker rm ${{ env.CONTAINER_NAME }}
+            sudo docker rmi $(sudo docker images -q ${{ DOCKERHUB_REPOSITORY }}/${{ env.IMG_NAME }})
+            sudo docker run -d -v /root/env/.env:/app/env/.env --name poten -p 80:8080 ${{ DOCKERHUB_REPOSITORY }}/${{ env.IMG_NAME }}
