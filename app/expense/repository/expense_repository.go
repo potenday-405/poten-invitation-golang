@@ -62,7 +62,7 @@ func (r *expenseRepository) DeleteExpense(ctx *gin.Context, userID, eventID stri
 
 func (r *expenseRepository) GetExpense(ctx *gin.Context, userID, eventID string) (*model.ResponseExpense, error) {
 	var expense model.ResponseExpense
-	err := r.externalDB.Select("a.event_id, a.user_id, a.is_invited, a.event_date, b.name, b.relation, b.amount, b.is_attended").
+	err := r.externalDB.Select("a.event_id, a.user_id, a.is_invited, a.event_date, a.link, b.name, b.relation, b.amount, b.is_attended").
 		Table("event a").
 		Joins("JOIN attendees b ON a.event_id = b.event_id").
 		Where("a.event_id = ?", eventID).
