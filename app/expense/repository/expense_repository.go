@@ -39,7 +39,7 @@ func (r *expenseRepository) CreateAttendee(ctx *gin.Context, attendee *model.Att
 
 func (r *expenseRepository) GetExpenseByEventID(ctx *gin.Context, eventID string) (*model.ResponseExpense, error) {
 	var expense model.ResponseExpense
-	if err := r.externalDB.Select("a.event_id, a.user_id, a.is_invited, a.event_date, b.name, b.relation, b.amount, b.is_attended").
+	if err := r.externalDB.Select("a.event_id, a.user_id, a.is_invited, a.event_date, a.link, b.name, b.relation, b.amount, b.is_attended").
 		Table("event a").
 		Joins("JOIN attendees b ON a.event_id = b.event_id").
 		Where("a.event_id = ?", eventID).
