@@ -139,6 +139,7 @@ func (c *expenseController) GetExpenseList(ctx *gin.Context) {
 	offsetOrderType, _ := strconv.Atoi(ctx.Query("offset_order_type"))
 	limit, _ := strconv.Atoi(ctx.Query("limit"))
 	page, _ := strconv.Atoi(ctx.Query("page"))
+	expense.IsInvited = ctx.Query("is_invited")
 	expense.Offset = ctx.Query("offset")
 	expense.OffsetOrderType = int8(offsetOrderType)
 	expense.Order = ctx.Query("order")
