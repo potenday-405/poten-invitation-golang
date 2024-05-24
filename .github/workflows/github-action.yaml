@@ -41,8 +41,8 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            ${{ DOCKERHUB_REPOSITORY }}/${{ env.IMG_NAME }}:latest
-            ${{ DOCKERHUB_REPOSITORY }}/${{ steps.metadata.outputs.tags }}
+            ${{ env.DOCKERHUB_REPOSITORY }}/${{ env.IMG_NAME }}:latest
+            ${{ env.DOCKERHUB_REPOSITORY }}/${{ steps.metadata.outputs.tags }}
 #            ${{ github.repository_owner }}/${{ env.IMG_NAME }}:latest
 #            ${{ github.repository_owner }}/${{ steps.metadata.outputs.tags }}
 
@@ -74,5 +74,5 @@ jobs:
           script: |
             sudo docker stop ${{ env.CONTAINER_NAME }}
             sudo docker rm ${{ env.CONTAINER_NAME }}
-            sudo docker rmi $(sudo docker images -q ${{ DOCKERHUB_REPOSITORY }}/${{ env.IMG_NAME }})
-            sudo docker run -d -v /root/env/.env:/app/env/.env --name poten -p 80:8080 ${{ DOCKERHUB_REPOSITORY }}/${{ env.IMG_NAME }}
+            sudo docker rmi $(sudo docker images -q ${{ env.DOCKERHUB_REPOSITORY }}/${{ env.IMG_NAME }})
+            sudo docker run -d -v /root/env/.env:/app/env/.env --name poten -p 80:8080 ${{ env.DOCKERHUB_REPOSITORY }}/${{ env.IMG_NAME }}
