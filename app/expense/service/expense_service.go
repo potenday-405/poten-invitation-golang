@@ -57,7 +57,6 @@ func (s *expenseService) CreateExpense(ctx *gin.Context, expense *model.CreateEx
 		return nil, err
 	}
 
-	// TODO 점수준다(유저에 요청) 주의사항: 생성점수 + 불참1 참여2 점수
 	url := "http://" + os.Getenv("USER_SERVER") + "/user/score"
 	body, err := json.Marshal(util.UserScore{Method: http.MethodPost, IsAttended: int(expense.IsAttended)})
 	if err != nil {
