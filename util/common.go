@@ -37,7 +37,7 @@ func StringToTime(t string) (*time.Time, error) {
 	return &date, nil
 }
 
-func RestClient(method, url, accessToken string, body []byte) (int, error) {
+func RestClient(method, url, userID string, body []byte) (int, error) {
 	// fasthttp.Client 생성
 	client := &fasthttp.Client{}
 
@@ -48,7 +48,7 @@ func RestClient(method, url, accessToken string, body []byte) (int, error) {
 	req.SetRequestURI(url)
 	req.Header.SetMethod(method)
 	req.Header.SetContentType("application/json")
-	req.Header.Set("access-token", accessToken)
+	req.Header.Set("user_id", userID)
 	req.SetBody(body)
 
 	// 요청 실행

@@ -62,7 +62,7 @@ func (s *expenseService) CreateExpense(ctx *gin.Context, expense *model.CreateEx
 	if err != nil {
 		return nil, err
 	}
-	client, err := util.RestClient(http.MethodPost, url, ctx.Query("access-token"), body)
+	client, err := util.RestClient(http.MethodPost, url, expense.UserID, body)
 	if err != nil && client != 200 {
 		return nil, errors.New("user score request failed")
 	}
@@ -127,7 +127,7 @@ func (s *expenseService) UpdateExpense(ctx *gin.Context, expense *model.UpdateEx
 	if err != nil {
 		return nil, err
 	}
-	client, err := util.RestClient(http.MethodPut, url, ctx.Query("access-token"), body)
+	client, err := util.RestClient(http.MethodPut, url, expense.UserID, body)
 	if err != nil && client != 200 {
 		return nil, errors.New("user score request failed")
 	}
@@ -150,7 +150,7 @@ func (s *expenseService) DeleteExpense(ctx *gin.Context, expense *model.DeleteEx
 	if err != nil {
 		return err
 	}
-	client, err := util.RestClient(http.MethodDelete, url, ctx.Query("access-token"), body)
+	client, err := util.RestClient(http.MethodDelete, url, expense.UserID, body)
 	if err != nil && client != 200 {
 		return errors.New("user score request failed")
 	}

@@ -28,16 +28,17 @@ func TestStringToTime(t *testing.T) {
 func TestRestClient(t *testing.T) {
 	testInitializer()
 	url := "http://" + os.Getenv("USER_SERVER") + "/user/score"
-	accessToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkMmM3YWQ3ZC1mMjlkLTRmMjQtYWRiOC00ZTQ2NTA2NDE1ODgiLCJleHAiOjE3MTY1NDM0NzZ9.7mlugK4Wdo9J6GZdSB-rMzEAv4wmiQylAZdp7M0piEw"
+	userID := "d2c7ad7d-f29d-4f24-adb8-4e4650641588"
 	t.Log(url)
 	st, err := json.Marshal(struct {
-		Method     string `json:"method"`
-		IsAttended int    `json:"is_attended"`
-	}{"POST", 1})
+		Method         string `json:"method"`
+		IsAttended     int    `json:"is_attended"`
+		InvitationType string `json:"invitation_type"`
+	}{"POST", 1, "Wedding"})
 	if err != nil {
 		t.Fatal(err)
 	}
-	statusCode, err := RestClient(http.MethodPost, url, accessToken, st)
+	statusCode, err := RestClient(http.MethodPost, url, userID, st)
 	if err != nil {
 		t.Fatal(err)
 	}
