@@ -13,7 +13,7 @@ func GetRouter(expenseController domain.ExpenseController) *gin.Engine {
 	r := gin.Default()
 	r.Use(cors.New(
 		cors.Config{
-			AllowOrigins: []string{"https://www.gardenr.kr/"},
+			AllowOrigins: []string{"https://www.gardenr.kr", "http://10.0.4.6", "https://10.0.4.6"},
 			AllowMethods: []string{http.MethodPost, http.MethodPut, http.MethodDelete},
 			MaxAge:       12 * time.Hour,
 		},
