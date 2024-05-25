@@ -15,6 +15,7 @@ func GetRouter(expenseController domain.ExpenseController) *gin.Engine {
 		cors.Config{
 			AllowOrigins: []string{"https://www.gardenr.kr", "http://10.0.4.6", "https://10.0.4.6", "https://tikitakaapi.site"},
 			AllowMethods: []string{http.MethodPost, http.MethodPut, http.MethodDelete},
+			AllowHeaders: []string{"access-token"},
 			MaxAge:       12 * time.Hour,
 		},
 	))
