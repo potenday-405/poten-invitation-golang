@@ -24,7 +24,7 @@ type CreateExpense struct {
 	IsInvited  string `json:"is_invited" binding:"required"`
 	Name       string `json:"name" binding:"required"`
 	EventDate  string `json:"event_date" binding:"required"`
-	Expense    int64  `json:"expense" binding:"required"`
+	Expense    int64  `json:"expense"`
 	Relation   string `json:"relation"`
 	IsAttended int8   `json:"is_attended"`
 	Link       string `json:"link"`
@@ -60,7 +60,7 @@ type UpdateExpense struct {
 	IsInvited  string `json:"is_invited" binding:"required"`
 	Name       string `json:"name" binding:"required"`
 	EventDate  string `json:"event_date" binding:"required"`
-	Expense    int64  `json:"expense" binding:"required"`
+	Expense    int64  `json:"expense"`
 	Relation   string `json:"relation"`
 	IsAttended int8   `json:"is_attended"`
 	Link       string `json:"link"`
