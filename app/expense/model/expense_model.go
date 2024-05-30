@@ -1,6 +1,7 @@
 package model
 
 import (
+	"mime/multipart"
 	"poten-invitation-golang/util"
 	"time"
 )
@@ -175,4 +176,9 @@ type ResponseExpenseTotal struct {
 	IsInvited    string `json:"is_invited"`
 	ExpenseCount int    `json:"expense_count"`
 	ExpenseTotal int64  `json:"total_expense"`
+}
+
+type CreateExpenseByCSV struct {
+	UserID string                `json:"user_id"`
+	File   *multipart.FileHeader `form:"file"`
 }

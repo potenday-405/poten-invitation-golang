@@ -26,6 +26,7 @@ type ExpenseService interface {
 	GetExpenseList(ctx *gin.Context, expense *model.GetExpenseList) ([]*model.ResponseExpense, error)
 	GetExpenseTotal(ctx *gin.Context, expense *model.GetExpenseTotal) (*model.ResponseExpenseTotal, error)
 	GetExpenseSearch(ctx *gin.Context, expense *model.GetExpenseSearch) ([]*model.ResponseExpense, error)
+	CreateExpenseByCSV(ctx *gin.Context, expense *model.CreateExpenseByCSV) error
 }
 
 type ExpenseController interface {
@@ -36,4 +37,5 @@ type ExpenseController interface {
 	GetExpenseList(ctx *gin.Context)
 	GetExpenseTotal(ctx *gin.Context)
 	GetExpenseSearch(ctx *gin.Context)
+	CreateExpenseByCSV(ctx *gin.Context)
 }
