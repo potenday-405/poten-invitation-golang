@@ -192,3 +192,28 @@ func (c *expenseController) GetExpenseSearch(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, list)
 }
+
+func (c *expenseController) CreateExpenseByCSV(ctx *gin.Context) {
+	var expense model.CreateExpenseByCSV
+	expense.UserID = ctx.Request.Header.Get("user_id")
+	log.Printf("Create Expense user_id Log: %v", expense.UserID)
+	if expense.UserID == "" {
+		log.Println("error: user_id not exist")
+		ctx.JSON(http.StatusBadRequest, gin.H{"detail": "Invalid token, user id not exist"})
+		return
+	}
+	if err := ctx.ShouldBind(&expense); err != nil {
+		log.Fatalln("Error in JSON binding: ", err)
+	}
+	if expense.File == nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"detail": "file is not exist"})
+		return
+	}
+	err := c.service.CreateExpenseByCSV(ctx, &expense)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"detail": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, "Excel Uploaded Successfully")
+}

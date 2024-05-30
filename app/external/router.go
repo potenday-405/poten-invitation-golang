@@ -22,6 +22,7 @@ func GetRouter(expenseController domain.ExpenseController) *gin.Engine {
 	group.GET("/expenses", expenseController.GetExpenseList)
 	group.GET("/expense/total", expenseController.GetExpenseTotal)
 	group.GET("/expense/search", expenseController.GetExpenseSearch)
+	group.POST("/expense/csv", expenseController.CreateExpenseByCSV)
 
 	return r
 }

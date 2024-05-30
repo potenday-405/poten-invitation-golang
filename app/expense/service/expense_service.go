@@ -1,16 +1,19 @@
 package service
 
 import (
+	"encoding/csv"
 	"encoding/json"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"log"
 	"net/http"
 	"os"
 	"poten-invitation-golang/app/expense/model"
 	"poten-invitation-golang/domain"
 	"poten-invitation-golang/util"
+	"strconv"
 )
 
 type expenseService struct {
@@ -196,4 +199,82 @@ func (s *expenseService) GetExpenseSearch(ctx *gin.Context, expense *model.GetEx
 		return nil, err
 	}
 	return list, nil
+}
+
+func (s *expenseService) CreateExpenseByCSV(ctx *gin.Context, expense *model.CreateExpenseByCSV) error {
+	var events []*model.Event
+	var attendees []*model.Attendees
+	file, err := expense.File.Open()
+	if err != nil {
+		log.Fatalln("Error in opening file")
+	}
+	defer file.Close()
+
+	records, err := csv.NewReader(file).ReadAll()
+	if err != nil {
+		log.Fatalln("Error in reading file")
+	}
+	for i := range records {
+		if i <= 2 {
+			continue
+		}
+		if records[i][0] == "" {
+			continue
+		}
+		// TODO goroutine 사용하도록 refactoring 해도 좋을듯
+		var event model.Event
+		var attendee model.Attendees
+		time, err := util.StringToTime(records[i][2])
+		if err != nil {
+			return err
+		}
+		amount, err := strconv.Atoi(records[i][1])
+		if err != nil {
+			return err
+		}
+		eventID := uuid.New().String()
+		event.EventID = eventID
+		event.UserID = expense.UserID
+		event.EventDate = *time
+		event.IsInvited = 2
+		event.InviteStatus = "act"
+		event.InvitationID = 1
+		attendee.EventID = eventID
+		attendee.AttendeeID = uuid.New().String()
+		attendee.Name = records[i][1]
+		attendee.Amount = int64(amount)
+		switch records[i][4] {
+		case "Y":
+			attendee.IsAttended = 2
+		case "N":
+			attendee.IsAttended = 1
+		default:
+			return errors.New("invalid is_attended type please write in Y or N")
+		}
+		attendee.ExpenseType = 1
+		events = append(events, &event)
+		attendees = append(attendees, &attendee)
+	}
+	for i := range events {
+		if err = s.repo.GetTransaction(ctx).Transaction(func(tx *gorm.DB) error {
+			eventResult := tx.Create(events[i])
+			if eventResult.Error != nil {
+				return eventResult.Error
+			}
+			if eventResult.RowsAffected == 0 {
+				return errors.New("event create failed")
+			}
+			attendeeResult := tx.Create(attendees[i])
+			if attendeeResult.Error != nil {
+				return attendeeResult.Error
+			}
+			if attendeeResult.RowsAffected == 0 {
+				return errors.New("event create failed")
+			}
+			return nil
+		}); err != nil {
+			return err
+		}
+	}
+	return nil
 }
