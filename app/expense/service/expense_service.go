@@ -229,7 +229,7 @@ func (s *expenseService) CreateExpenseByCSV(ctx *gin.Context, expense *model.Cre
 		}
 		amount, err := strconv.Atoi(records[i][1])
 		if err != nil {
-			return err
+			amount = 0
 		}
 		eventID := uuid.New().String()
 		event.EventID = eventID
