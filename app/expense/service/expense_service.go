@@ -224,8 +224,8 @@ func (s *expenseService) CreateExpenseByCSV(ctx *gin.Context, expense *model.Cre
 		var event model.Event
 		var attendee model.Attendees
 		time, err := util.StringToTime(records[i][2])
-		if err != nil {
-			return err
+		if err != nil || time == nil {
+			return errors.New("invalid time parameter")
 		}
 		amount, err := strconv.Atoi(records[i][1])
 		if err != nil {
