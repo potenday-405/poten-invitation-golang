@@ -7,7 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
-	"log"
 	"net/http"
 	"os"
 	"poten-invitation-golang/app/expense/model"
@@ -206,13 +205,13 @@ func (s *expenseService) CreateExpenseByCSV(ctx *gin.Context, expense *model.Cre
 	var attendees []*model.Attendees
 	file, err := expense.File.Open()
 	if err != nil {
-		log.Fatalln("Error in opening file")
+		return err
 	}
 	defer file.Close()
 
 	records, err := csv.NewReader(file).ReadAll()
 	if err != nil {
-		log.Fatalln("Error in reading file")
+		return err
 	}
 	for i := range records {
 		if i <= 2 {
