@@ -203,6 +203,7 @@ func (c *expenseController) CreateExpenseByCSV(ctx *gin.Context) {
 		return
 	}
 	if err := ctx.ShouldBind(&expense); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"detail": "Error in JSON binding" + err.Error()})
 		log.Fatalln("Error in JSON binding: ", err)
 	}
 	if expense.File == nil {
