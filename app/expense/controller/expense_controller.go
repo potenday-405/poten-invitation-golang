@@ -204,7 +204,7 @@ func (c *expenseController) CreateExpenseByCSV(ctx *gin.Context) {
 	}
 	if err := ctx.ShouldBind(&expense); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"detail": "Error in JSON binding" + err.Error()})
-		log.Fatalln("Error in JSON binding: ", err)
+		return
 	}
 	if expense.File == nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"detail": "file is not exist"})
