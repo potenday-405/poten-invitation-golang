@@ -1,9 +1,13 @@
 package controller
 
 import (
+	"bytes"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"poten-invitation-golang/app/expense/model"
@@ -195,6 +199,17 @@ func (c *expenseController) GetExpenseSearch(ctx *gin.Context) {
 
 func (c *expenseController) CreateExpenseByCSV(ctx *gin.Context) {
 	var expense model.CreateExpenseByCSV
+
+	// TODO Remove this Logic
+	buf := make([]byte, 1024)
+	num, _ := ctx.Request.Body.Read(buf)
+	reqBody := string(buf[0:num])
+	ctx.Request.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(reqBody))) // Write body back
+	indent, _ := json.MarshalIndent(reqBody, "", "  ")
+	log.Println("request body: " + string(indent))
+	log.Println(fmt.Sprintf("ctx.Request.Header.Get(\"Content-Length\") : %v", ctx.Request.Header.Get("Content-Length")))
+	// TODO Remove this Logic
+
 	expense.UserID = ctx.Request.Header.Get("user_id")
 	log.Printf("Create Expense user_id Log: %v", expense.UserID)
 	if expense.UserID == "" {
@@ -203,16 +218,18 @@ func (c *expenseController) CreateExpenseByCSV(ctx *gin.Context) {
 		return
 	}
 	if err := ctx.ShouldBind(&expense); err != nil {
+		log.Println("error: Error in JSON binding", err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"detail": "Error in JSON binding" + err.Error()})
 		return
 	}
 	if expense.File == nil {
+		log.Println("error: file is not exist")
 		ctx.JSON(http.StatusBadRequest, gin.H{"detail": "file is not exist"})
 		return
 	}
 	err := c.service.CreateExpenseByCSV(ctx, &expense)
 	if err != nil {
-		log.Println(err)
+		log.Println("error: CreateExpenseByCSV service failed", err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"detail": err.Error()})
 		return
 	}
