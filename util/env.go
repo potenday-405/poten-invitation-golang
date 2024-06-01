@@ -6,5 +6,6 @@ func EnvInitializer() error {
 	if err := godotenv.Load("app/env/.env"); err != nil {
 		return err
 	}
+
 	return nil
 }
