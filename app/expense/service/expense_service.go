@@ -223,7 +223,7 @@ func (s *expenseService) CreateExpenseByCSV(ctx *gin.Context, expense *model.Cre
 		// TODO goroutine 사용하도록 refactoring 해도 좋을듯
 		var event model.Event
 		var attendee model.Attendees
-		time, err := util.StringToTime(records[i][2])
+		time, err := util.StringToTime(records[i][2] + records[i][3])
 		if err != nil || time == nil {
 			return errors.New("invalid time parameter")
 		}
@@ -238,11 +238,13 @@ func (s *expenseService) CreateExpenseByCSV(ctx *gin.Context, expense *model.Cre
 		event.IsInvited = 2
 		event.InviteStatus = "act"
 		event.InvitationID = 1
+		event.Memo = records[i][6]
 		attendee.EventID = eventID
 		attendee.AttendeeID = uuid.New().String()
-		attendee.Name = records[i][1]
+		attendee.Name = records[i][0]
 		attendee.Amount = int64(amount)
-		switch records[i][4] {
+		attendee.Relation = records[i][4]
+		switch records[i][5] {
 		case "Y":
 			attendee.IsAttended = 2
 		case "N":
@@ -254,6 +256,7 @@ func (s *expenseService) CreateExpenseByCSV(ctx *gin.Context, expense *model.Cre
 		events = append(events, &event)
 		attendees = append(attendees, &attendee)
 	}
+	// TODO : event 갯수만큼 Transaction 일어나는중. 개선 필요
 	for i := range events {
 		if err = s.repo.GetTransaction(ctx).Transaction(func(tx *gorm.DB) error {
 			eventResult := tx.Create(events[i])

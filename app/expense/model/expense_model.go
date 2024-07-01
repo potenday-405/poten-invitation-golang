@@ -135,6 +135,7 @@ type Event struct {
 	IsInvited    int8
 	InviteStatus string
 	Link         string
+	Memo         string
 	EventDate    time.Time
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
