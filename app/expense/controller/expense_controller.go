@@ -1,9 +1,11 @@
 package controller
 
 import (
+	"bytes"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"poten-invitation-golang/app/expense/model"
@@ -198,11 +200,11 @@ func (c *expenseController) CreateExpenseByCSV(ctx *gin.Context) {
 
 	// TODO Remove this Logic
 	// TODO 이 부분이 잘 안먹히네?
-	//buf := make([]byte, 1024)
-	//num, _ := ctx.Request.Body.Read(buf)
-	//reqBody := string(buf[0:num])
-	//log.Println("request body: " + string(reqBody))
-	//ctx.Request.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(reqBody))) // Write body back
+	buf := make([]byte, 1024)
+	num, _ := ctx.Request.Body.Read(buf)
+	reqBody := string(buf[0:num])
+	log.Println("request body: " + string(reqBody))
+	ctx.Request.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(reqBody))) // Write body back
 	// TODO Remove this Logic
 
 	expense.UserID = ctx.Request.Header.Get("user_id")
@@ -217,6 +219,7 @@ func (c *expenseController) CreateExpenseByCSV(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"detail": "Error in JSON binding" + err.Error()})
 		return
 	}
+	log.Println("error: Test error")
 	if expense.File == nil {
 		log.Println("error: file is not exist")
 		ctx.JSON(http.StatusBadRequest, gin.H{"detail": "file is not exist"})
