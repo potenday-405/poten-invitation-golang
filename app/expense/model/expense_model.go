@@ -180,6 +180,6 @@ type ResponseExpenseTotal struct {
 }
 
 type CreateExpenseByCSV struct {
-	UserID string                `json:"user_id"`
+	UserID string
 	File   *multipart.FileHeader `form:"file"`
 }
