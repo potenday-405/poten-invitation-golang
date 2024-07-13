@@ -25,6 +25,11 @@ func NewExpenseController(service domain.ExpenseService) domain.ExpenseControlle
 
 func (c *expenseController) CreateExpense(ctx *gin.Context) {
 	var expense model.CreateExpense
+	buf := make([]byte, 1024)
+	num, _ := ctx.Request.Body.Read(buf)
+	reqBody := string(buf[0:num])
+	log.Println("request body: " + string(reqBody))
+	ctx.Request.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(reqBody))) // Write body back
 	if err := ctx.ShouldBind(&expense); err != nil {
 		log.Printf("error: parameter error: %v", err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"detail": err.Error()})
@@ -200,11 +205,11 @@ func (c *expenseController) CreateExpenseByCSV(ctx *gin.Context) {
 
 	// TODO Remove this Logic
 	// TODO 이 부분이 잘 안먹히네?
-	buf := make([]byte, 1024)
-	num, _ := ctx.Request.Body.Read(buf)
-	reqBody := string(buf[0:num])
-	log.Println("request body: " + string(reqBody))
-	ctx.Request.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(reqBody))) // Write body back
+	//buf := make([]byte, 1024)
+	//num, _ := ctx.Request.Body.Read(buf)
+	//reqBody := string(buf[0:num])
+	//log.Println("request body: " + string(reqBody))
+	//ctx.Request.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(reqBody))) // Write body back
 	// TODO Remove this Logic
 
 	expense.UserID = ctx.Request.Header.Get("user_id")
@@ -219,7 +224,9 @@ func (c *expenseController) CreateExpenseByCSV(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"detail": "Error in JSON binding" + err.Error()})
 		return
 	}
-	log.Println("error: Test error")
+	log.Println("file upload test: ", expense.File.Filename)
+	log.Println("file upload test: ", expense.File.Header)
+	log.Println("file upload test: ", expense.File.Size)
 	if expense.File == nil {
 		log.Println("error: file is not exist")
 		ctx.JSON(http.StatusBadRequest, gin.H{"detail": "file is not exist"})
