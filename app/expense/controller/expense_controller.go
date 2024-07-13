@@ -224,13 +224,14 @@ func (c *expenseController) CreateExpenseByCSV(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"detail": "Error in JSON binding" + err.Error()})
 		return
 	}
-	log.Println("file upload test: ", expense.File.Filename)
-	log.Println("file upload test: ", expense.File.Header)
-	log.Println("file upload test: ", expense.File.Size)
 	if expense.File == nil {
 		log.Println("error: file is not exist")
 		ctx.JSON(http.StatusBadRequest, gin.H{"detail": "file is not exist"})
 		return
+	} else {
+		log.Println("file upload test: ", expense.File.Filename)
+		log.Println("file upload test: ", expense.File.Header)
+		log.Println("file upload test: ", expense.File.Size)
 	}
 	err := c.service.CreateExpenseByCSV(ctx, &expense)
 	if err != nil {
