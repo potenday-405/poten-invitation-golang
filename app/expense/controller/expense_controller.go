@@ -225,6 +225,9 @@ func (c *expenseController) CreateExpenseByCSV(ctx *gin.Context) {
 		return
 	}
 	form, _ := ctx.MultipartForm()
+	if form == nil {
+		log.Println("Multipart Form Nil!")
+	}
 	files := form.File
 	for s, headers := range files {
 		log.Println("files test!!!")
