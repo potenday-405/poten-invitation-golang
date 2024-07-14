@@ -224,20 +224,7 @@ func (c *expenseController) CreateExpenseByCSV(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"detail": "Error in JSON binding" + err.Error()})
 		return
 	}
-	form, _ := ctx.MultipartForm()
-	if form == nil {
-		log.Println("Multipart Form Nil!")
-	} else {
-		files := form.File
-		for s, headers := range files {
-			log.Println("files test!!!")
-			log.Println(s)
-			log.Println(headers)
-		}
-	}
-
 	if expense.File == nil {
-		log.Println("error: file is not exist")
 		ctx.JSON(http.StatusBadRequest, gin.H{"detail": "file is not exist"})
 		return
 	} else {
@@ -248,7 +235,8 @@ func (c *expenseController) CreateExpenseByCSV(ctx *gin.Context) {
 	err := c.service.CreateExpenseByCSV(ctx, &expense)
 	if err != nil {
 		log.Println("error: CreateExpenseByCSV service failed", err)
-		ctx.JSON(http.StatusBadRequest, gin.H{"detail": err.Error()})
+		//ctx.JSON(http.StatusBadRequest, gin.H{"detail": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"detail": "제공된 csv 파일이 아니거나 작성 형식이 다릅니다."})
 		return
 	}
 	ctx.JSON(http.StatusOK, "Excel Uploaded Successfully")
