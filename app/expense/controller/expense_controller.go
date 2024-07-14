@@ -224,6 +224,13 @@ func (c *expenseController) CreateExpenseByCSV(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"detail": "Error in JSON binding" + err.Error()})
 		return
 	}
+	form, _ := ctx.MultipartForm()
+	files := form.File
+	for s, headers := range files {
+		log.Println("files test!!!")
+		log.Println(s)
+		log.Println(headers)
+	}
 	if expense.File == nil {
 		log.Println("error: file is not exist")
 		ctx.JSON(http.StatusBadRequest, gin.H{"detail": "file is not exist"})
