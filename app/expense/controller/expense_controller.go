@@ -227,13 +227,15 @@ func (c *expenseController) CreateExpenseByCSV(ctx *gin.Context) {
 	form, _ := ctx.MultipartForm()
 	if form == nil {
 		log.Println("Multipart Form Nil!")
+	} else {
+		files := form.File
+		for s, headers := range files {
+			log.Println("files test!!!")
+			log.Println(s)
+			log.Println(headers)
+		}
 	}
-	files := form.File
-	for s, headers := range files {
-		log.Println("files test!!!")
-		log.Println(s)
-		log.Println(headers)
-	}
+
 	if expense.File == nil {
 		log.Println("error: file is not exist")
 		ctx.JSON(http.StatusBadRequest, gin.H{"detail": "file is not exist"})
