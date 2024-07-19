@@ -203,15 +203,6 @@ func (c *expenseController) GetExpenseSearch(ctx *gin.Context) {
 func (c *expenseController) CreateExpenseByCSV(ctx *gin.Context) {
 	var expense model.CreateExpenseByCSV
 
-	// TODO Remove this Logic
-	// TODO 이 부분이 잘 안먹히네?
-	//buf := make([]byte, 1024)
-	//num, _ := ctx.Request.Body.Read(buf)
-	//reqBody := string(buf[0:num])
-	//log.Println("request body: " + string(reqBody))
-	//ctx.Request.Body = ioutil.NopCloser(bytes.NewBuffer([]byte(reqBody))) // Write body back
-	// TODO Remove this Logic
-
 	expense.UserID = ctx.Request.Header.Get("user_id")
 	log.Printf("Create Expense user_id Log: %v", expense.UserID)
 	if expense.UserID == "" {
@@ -227,10 +218,6 @@ func (c *expenseController) CreateExpenseByCSV(ctx *gin.Context) {
 	if expense.File == nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"detail": "file is not exist"})
 		return
-	} else {
-		log.Println("file upload test: ", expense.File.Filename)
-		log.Println("file upload test: ", expense.File.Header)
-		log.Println("file upload test: ", expense.File.Size)
 	}
 	err := c.service.CreateExpenseByCSV(ctx, &expense)
 	if err != nil {
