@@ -171,6 +171,7 @@ type ResponseExpense struct {
 	Amount     int64     `json:"amount"`
 	IsAttended int8      `json:"is_attended"`
 	Link       string    `json:"link"`
+	Memo       string    `json:"memo"`
 }
 
 type ResponseExpenseTotal struct {
