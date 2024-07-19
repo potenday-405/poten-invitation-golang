@@ -65,6 +65,7 @@ type UpdateExpense struct {
 	Relation   string `json:"relation"`
 	IsAttended int8   `json:"is_attended"`
 	Link       string `json:"link"`
+	Memo       string `json:"memo"`
 }
 
 func (t *UpdateExpense) ToEntity() (*Event, *Attendees, error) {
@@ -79,6 +80,7 @@ func (t *UpdateExpense) ToEntity() (*Event, *Attendees, error) {
 		EventDate:    *eventDate,
 		InvitationID: 1,
 		Link:         t.Link,
+		Memo:         t.Memo,
 	}
 	attendees := Attendees{
 		EventID:     t.EventID,
